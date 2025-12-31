@@ -8,20 +8,16 @@ from moviepy import VideoFileClip
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load environment variables
 load_dotenv()
 
-# Initialize Groq client
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
     raise ValueError("GROQ_API_KEY not found in .env file")
 
 client = Groq(api_key=api_key)
 
-# Target directories
 TARGET_DIRS = ["kallaway", "jeffnippard", "rourkeheath"]
 
-# Supported video extensions
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv', '.webm')
 
 def transcribe_video(video_path):
@@ -31,13 +27,11 @@ def transcribe_video(video_path):
     try:
         logging.info(f"Processing: {video_path}")
         
-        # 1. Extract audio to temporary file
         temp_audio_path = "temp_audio.mp3"
         video = VideoFileClip(video_path)
         video.audio.write_audiofile(temp_audio_path, logger=None)
         video.close()
         
-        # 2. Transcribe using Groq
         logging.info("Transcribing...")
         with open(temp_audio_path, "rb") as file:
             transcription = client.audio.transcriptions.create(
@@ -47,10 +41,8 @@ def transcribe_video(video_path):
                 temperature=0.0
             )
         
-        # 3. Save to JSON
         json_filename = os.path.splitext(video_path)[0] + ".json"
         
-        # Prepare JSON content
         output_data = {
             "filename": os.path.basename(video_path),
             "text": transcription.text
@@ -61,13 +53,11 @@ def transcribe_video(video_path):
         
         logging.info(f"Saved transcription to: {json_filename}")
         
-        # 4. Cleanup temporary audio
         if os.path.exists(temp_audio_path):
             os.remove(temp_audio_path)
             
     except Exception as e:
         logging.error(f"Failed to process {video_path}: {e}")
-        # Clean up in case of error
         if os.path.exists("temp_audio.mp3"):
             os.remove("temp_audio.mp3")
 
@@ -87,7 +77,6 @@ def main():
             if filename.lower().endswith(VIDEO_EXTENSIONS):
                 video_full_path = os.path.join(dir_path, filename)
                 
-                # Check if JSON already exists (optional optimization, but good practice)
                 json_check_path = os.path.splitext(video_full_path)[0] + ".json"
                 if os.path.exists(json_check_path):
                     logging.info(f"Skipping {filename}, JSON already exists.")
@@ -97,3 +86,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
