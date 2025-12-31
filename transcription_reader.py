@@ -2,12 +2,12 @@ import json
 import os
 
 def get_transcriptions_file_path():
-    """Returns the absolute path to the transcriptions file."""
+    """."""
     base_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_dir, "gemini-transcripter", "transcriptions.json")
 
 def get_data():
-    """Reads the JSON data securely."""
+    """Ler o arquivo JSON."""
     filepath = get_transcriptions_file_path()
     if not os.path.exists(filepath):
         return []
@@ -19,10 +19,9 @@ def get_data():
 
 def list_available_creators() -> str:
     """
-    Lists all content creators found in the transcriptions database.
-    
+    Lista todos os criadores de conteúdos encontrados no database.
     Returns:
-        str: A comma-separated list of creator names.
+        str: .
     """
     data = get_data()
     creators = set(item.get('folder') for item in data if item.get('folder'))
@@ -32,14 +31,14 @@ def list_available_creators() -> str:
 
 def get_creator_transcriptions(creator_name: str) -> str:
     """
-    Retrieves all transcriptions for a specific content creator.
+    Busca todas as transcrições de um criador de conteúdo específico.
     
     Args:
-        creator_name (str): The name of the creator (folder name) to filter by.
+        creator_name (str): nome do criador para filtrar.
         
     Returns:
-        str: A formatted string containing all video titles and their transcriptions.
-    """
+        str: String contendo todos os títulos dos vídeos e suas transcrições.
+"""
     data = get_data()
     # Normalize input for better matching
     creator_name = creator_name.lower().strip()
@@ -51,6 +50,7 @@ def get_creator_transcriptions(creator_name: str) -> str:
     ]
     
     if not results:
-        return f"No transcriptions found for creator: {creator_name}"
+        return f"sem transcrições encontradas do: {creator_name}"
         
     return "\n".join(results)
+
