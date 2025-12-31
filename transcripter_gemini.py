@@ -5,25 +5,20 @@ import logging
 import google.generativeai as genai
 from dotenv import load_dotenv
 
-# Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load environment variables
 load_dotenv()
 
-# Configure Gemini API
 api_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
 if not api_key:
     raise ValueError("GEMINI_API_KEY or GOOGLE_API_KEY not found in .env file")
 
 genai.configure(api_key=api_key)
 
-# Global configuration
 TARGET_DIRS = ["kallaway", "jeffnippard", "rourkeheath"]
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv', '.webm')
 OUTPUT_FILE = "transcriptions.json"
 
-# Safety settings
 safety_settings = [
     { "category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE" },
     { "category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE" },
@@ -60,11 +55,9 @@ def transcribe_video_gemini(video_path, folder_name):
     try:
         logging.info(f"Processing with Gemini: {video_path}")
         
-        # 1. Upload file
         logging.info("Uploading video to Gemini...")
         video_file = genai.upload_file(path=video_path)
         
-        # 2. Wait for processing
         while video_file.state.name == "PROCESSING":
             logging.info("Waiting for video processing...")
             time.sleep(5)
@@ -75,7 +68,6 @@ def transcribe_video_gemini(video_path, folder_name):
             
         logging.info("Video processed. Generating transcription...")
         
-        # 3. Generate content
         model = genai.GenerativeModel(model_name="gemini-2.5-pro")
         prompt = "Transcreva este vídeo. Retorne apenas o texto da transcrição, sem introduções ou conclusões."
         
@@ -85,7 +77,6 @@ def transcribe_video_gemini(video_path, folder_name):
             safety_settings=safety_settings
         )
         
-        # Return data structure
         return {
             "folder": folder_name,
             "filename": os.path.basename(video_path),
@@ -97,7 +88,6 @@ def transcribe_video_gemini(video_path, folder_name):
         return None
         
     finally:
-        # 4. Cleanup
         if video_file:
             try:
                 video_file.delete()
@@ -108,18 +98,14 @@ def main():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     output_dir = os.path.join(base_dir, "gemini-transcripter")
     
-    # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         logging.info(f"Created output directory: {output_dir}")
         
     output_path = os.path.join(output_dir, OUTPUT_FILE)
     
-    # Load existing data
     transcriptions = load_existing_transcriptions(output_path)
     
-    # Create a set of processed filenames for quick lookup
-    # Assuming filename uniqueness across folders isn't guaranteed, key by (folder, filename)
     processed_keys = set((item['folder'], item['filename']) for item in transcriptions if 'folder' in item and 'filename' in item)
     
     for folder in TARGET_DIRS:
@@ -140,7 +126,6 @@ def main():
                 
                 video_full_path = os.path.join(dir_path, filename)
                 
-                # Transcribe
                 result = transcribe_video_gemini(video_full_path, folder)
                 
                 if result:
@@ -152,3 +137,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
