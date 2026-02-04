@@ -12,7 +12,7 @@ load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
-    raise ValueError("GROQ_API_KEY not found in .env file")
+    raise ValueError("GROQ_API_KEY não encontrado no .env")
 
 client = Groq(api_key=api_key)
 
@@ -22,7 +22,7 @@ VIDEO_EXTENSIONS = ('.mp4', '.mov', '.avi', '.mkv', '.webm')
 
 def transcribe_video(video_path):
     """
-    Extracts audio from video, transcribes it using Groq, and saves to JSON.
+    extrai audios de videos usando groq para transcrever e salvando em .json.
     """
     try:
         logging.info(f"Processing: {video_path}")
@@ -86,4 +86,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
