@@ -50,7 +50,7 @@ transcripter-ai/
 
 ```bash
 # Clone o repositório
-git clone <repo-url>
+git clone [<repo-url>](https://github.com/ErickGuimaraesFerreira/agno-agent-transcript)
 cd transcripter-ai
 
 # Instale as dependências
@@ -122,3 +122,4 @@ MIT License
 ---
 
 Desenvolvido com ❤️ usando [Agno](https://github.com/agno-ai/agno) e Google Gemini
+
